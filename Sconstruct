@@ -1,1 +1,7 @@
-Program('hello','hello.c')
+env = Environment(CC = 'g++',CCFLAGS = '-g')
+
+env.Program('test','test.cpp')
+
+env.Program('KMP','KMP.cpp')
+
+#env.Program('KMP','KMP.cpp')
