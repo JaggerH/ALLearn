@@ -3,53 +3,93 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include <map>
 #include "string.h"
 using namespace std;
 class Solution {
 public:
-	string findrepeate(string source) {
-		int left = 0,right = 1;
-		while( left != source.length() - 1 ) 
+	vector<int>::iterator find(vector<int> source, int destination) {
+		vector<int>::iterator it;
+		for(it = source.begin(); it != source.end(); it++)
 		{
-			while(source.substr(left, right - left) != source.substr(right, right))
-			{
-				cout << source.substr(left, right - left) << " " << source.substr(right + 1, right -left - 1) << endl;
-				if( right == source.length() - 1)
-					break;
-				right++;	 	
-			}
-			left++;
-			if(source.substr(left, right - left) == source.substr(right + 1, right - 1))
-				return source.substr(0, left) + "("  + source.substr(left, right - left - 1) + ")";
+			if(*it == destination)
+				return it;
 		}
-		return source;
-	}	
+		return source.end();
+	}
 	string fractionToDecimal(int numerator, int denominator) {
-		double a = (double)numerator/denominator;
+		int pre = numerator/denominator;
 		ostringstream buffer;
-		buffer << setprecision(16) << a;
-		string str = buffer.str();
-		int splitpos = str.find_first_of(".", 0);
-		if(splitpos != string::npos)
-		{
-			string pre = str.substr(0, splitpos);
-			string next = str.substr(splitpos + 1, str.length() - splitpos - 2);
-			if( pre.length() + next.length() == 16)
-			{
-				return pre + "." + findrepeate(next);
-			}
-			else
-				return pre+"."+next;
-		}
+		buffer << pre;
+		int next = numerator%denominator;
+		if(next == 0)
+			return buffer.str();
 		else
-			return str;
-
+		{
+			vector<int> result;
+			vector<int> yushu;
+			vector<int>::iterator repeate;
+			int yu = numerator % denominator;	
+			bool limited = false;
+			buffer << ".";	
+			while(true)
+			{
+				if(yu == 0)
+				{
+					limited = true;	
+					break;	
+				}
+				yu *= 10;	
+				while(yu < denominator)
+				{
+					result.push_back(0);	
+					yu *= 10;	
+				}
+				int value = yu/denominator;
+				cout << "当前结果:" << value << endl;
+				repeate = find(yushu, yu);
+				if(repeate == yushu.end())
+				{
+					cout << "没找到" << endl;
+					yushu.push_back(yu);
+					result.push_back(value);
+				}
+				else
+				{
+					cout << "找到了" << endl;
+					break;
+				}
+				yu  = yu%denominator;
+			}
+			vector<int>::iterator it;
+			if(limited)
+			{
+				for(it = result.begin(); it != result.end(); it++)
+					buffer << *it;	
+			}	
+			else
+			{
+				cout << *repeate << endl;
+				for(it = result.begin(); it != result.end(); it++)
+				{
+					if(it == repeate)
+						buffer << "(";	
+					buffer << *it;
+				}	
+					buffer << ")";
+			}
+		}	
+		return buffer.str();
     }
 };
-
 int main()
 {
 	Solution fi;
 	cout <<fi.fractionToDecimal(1, 3) << endl;
+	//cout <<fractionToDecimal(1, 6) << endl;
+	//cout <<fractionToDecimal(1, 17) << endl;
+	//cout <<fractionToDecimal(1, 19) << endl;
+	//cout <<fractionToDecimal(1, 99) << endl;
+	//cout <<fractionToDecimal(2, 5) << endl;
 	return 0;
 }
