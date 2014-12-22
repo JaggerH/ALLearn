@@ -3,93 +3,72 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
-#include <map>
+#include <ext/hash_map>
 #include "string.h"
 using namespace std;
-class Solution {
-public:
-	vector<int>::iterator find(vector<int> source, int destination) {
-		vector<int>::iterator it;
-		for(it = source.begin(); it != source.end(); it++)
-		{
-			if(*it == destination)
-				return it;
-		}
-		return source.end();
-	}
-	string fractionToDecimal(int numerator, int denominator) {
-		int pre = numerator/denominator;
-		ostringstream buffer;
-		buffer << pre;
-		int next = numerator%denominator;
-		if(next == 0)
-			return buffer.str();
-		else
-		{
-			vector<int> result;
-			vector<int> yushu;
-			vector<int>::iterator repeate;
-			int yu = numerator % denominator;	
-			bool limited = false;
-			buffer << ".";	
-			while(true)
-			{
-				if(yu == 0)
+//class Solution {
+//	public:
+		string fractionToDecimal(int numerator, int denominator) {
+			if(numerator == 0) return 0;
+			hash_map<int,string> result;
+			hash_map<int,string>::iterator it;
+			ostringstream buffer;
+			buffer << numerator/denominator;
+			int remainder = numerator % denominator;	
+			if( remainder == 0 )
+				return buffer.str();
+			else
+				buffer << ".";
+			while(true) {
+				if(remainder == 0)
+					break;
+				remainder *= 10;	
+				ostringstream temp;
+				while( remainder < denominator )
 				{
-					limited = true;	
-					break;	
+					remainder *= 10;
+					temp << 0;	
 				}
-				yu *= 10;	
-				while(yu < denominator)
+				int quotient = remainder / denominator;
+				temp << quotient;	
+				it = result.find(remainder);
+				if(it == result.end())
 				{
-					result.push_back(0);	
-					yu *= 10;	
-				}
-				int value = yu/denominator;
-				cout << "当前结果:" << value << endl;
-				repeate = find(yushu, yu);
-				if(repeate == yushu.end())
-				{
-					cout << "没找到" << endl;
-					yushu.push_back(yu);
-					result.push_back(value);
+					cout << "remainder:" << remainder << "; quotient:" << temp.str()  << endl;
+					string _temp_str = temp.str();
+					result.insert(make_pair<int, string>(remainder, _temp_str));
 				}
 				else
 				{
-					cout << "找到了" << endl;
 					break;
 				}
-				yu  = yu%denominator;
+				remainder = remainder % denominator;
 			}
-			vector<int>::iterator it;
-			if(limited)
+			//map to buffer
+			for(map<int,string>::iterator _it = result.begin(); _it != result.end(); _it++)	
 			{
-				for(it = result.begin(); it != result.end(); it++)
-					buffer << *it;	
-			}	
-			else
-			{
-				cout << *repeate << endl;
-				for(it = result.begin(); it != result.end(); it++)
-				{
-					if(it == repeate)
-						buffer << "(";	
-					buffer << *it;
-				}	
-					buffer << ")";
+				if(it == _it)
+					buffer << "(";
+				cout << "_it:" << _it->first << " " << _it->second << endl;
+				buffer << _it->second;
 			}
-		}	
-		return buffer.str();
-    }
-};
+			if(it != result.end())
+				buffer << ")";
+			return buffer.str();
+		}
+//};
 int main()
 {
-	Solution fi;
-	cout <<fi.fractionToDecimal(1, 3) << endl;
-	//cout <<fractionToDecimal(1, 6) << endl;
-	//cout <<fractionToDecimal(1, 17) << endl;
-	//cout <<fractionToDecimal(1, 19) << endl;
-	//cout <<fractionToDecimal(1, 99) << endl;
-	//cout <<fractionToDecimal(2, 5) << endl;
+	//Solution fi;
+	//cout <<fi.fractionToDecimal(1, 3) << endl;
+	//cout <<fi.fractionToDecimal(1, 6) << endl;
+	//cout <<fi.fractionToDecimal(1, 17) << endl;
+	//cout <<fi.fractionToDecimal(1, 19) << endl;
+	//cout <<fi.fractionToDecimal(1, 99) << endl;
+	//cout <<fi.fractionToDecimal(2, 5) << endl;
+	cout << fractionToDecimal(1, 17) << endl;
+	cout << setprecision(16) << (long double)1/17 << endl;
+	//cout <<fi.fractionToDecimal(1, 19) << endl;
+	//cout << setprecision(16) << (long double)1/19 << endl;
 	return 0;
 }
